@@ -3,8 +3,14 @@
     //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
     let modal = true;
 
+    // Variable pour les sous-tâches
+    let subTask = false;
+
     //Variable pour le nouvel item de la liste
-    let newItem = "";
+    let newTask = "";
+
+    //Variable pour la nouvelle sous-tâche
+    let newSubTask = "";
 
     //Array pour les items de la liste
     let list = [
@@ -13,14 +19,30 @@
         {id: 3, name: "Do a push", completed : false},
     ];
 
+    //Array pour les sous-tâches
+    let subList = [
+    ];
+
     //Fonction pour ajouter un item à la liste si non vide
     function addToList(){
-        if(newItem === ""){
+        if(newTask === ""){
             alert("Please enter a todo item");
         }
         else{
-            list = [...list, {id: list.length + 1, name: newItem, completed : false}];
-            newItem = "";
+            list = [...list, {id: list.length + 1, name: newTask, completed : false}];
+            newTask = "";
+        }
+        
+    }
+
+    //Fonction pour ajouter une sous-tâche à la liste si non vide
+    function addToSubList(){
+        if(newSubTask === ""){
+            alert("Please enter a todo item");
+        }
+        else{
+            subList = [...subList, {id: subList.length + 1, name: newSubTask, completed : false}];
+            newSubTask = "";
         }
         
     }
@@ -41,8 +63,10 @@
         list = list.filter((item, i) => i !== index);
     }
 
-
-
+    //Fonction pour supprimer une sous-tâche de la liste
+    function removeFromSubList(index){
+        subList = subList.filter((item, i) => i !== index);
+    }
 </script>
 
 <!--Au clique sur le bouton la modal devient true-->
@@ -59,14 +83,33 @@
         <button class="close-modal" on:click={() =>(modal = !modal)}>x</button>
         <h1>Liste 1</h1>
         <!-- Input pour ajouter un item à la liste -->
-        <input class="modal-input" type="text" bind:value={newItem} placeholder="new todo item">
+        <input class="modal-input" type="text" bind:value={newTask} placeholder="new todo item">
         <button class="modal-input-button" on:click={addToList} >Add task</button>
     
         <!--for each pour ajouter chaque item à la liste-->
         <ul>
         {#each list as item, index}
           <li class:checked={item.completed}>
-            <input type="checkbox" bind:checked={item.completed}/> {item.name} <button on:click={() => removeFromList(index)}>x</button>
+            <input type="checkbox" bind:checked={item.completed}/> {item.name}
+            <button on:click={() =>(subTask = !subTask)}>+</button>
+            <button on:click={() => removeFromList(index)}>x</button>
+
+            <!--Si subTask est true alors on affiche la modal-->
+            <!-- {#if subTask}
+                    
+                    <input class="modal-input" type="text" bind:value={newSubTask} placeholder="new todo item">
+                    <button class="modal-input-button" on:click={addToSubList} >Add task</button>
+                
+                   
+                    <ul>
+                    {#each subList as subLists, index}
+                    <li class:checked={subLists.completed}>
+                        <input type="checkbox" bind:checked={subLists.completed}/> {subLists.name}
+                        <button on:click={() => removeFromSubList(index)}>x</button>
+                    </li>
+                    {/each}
+                    </ul>
+            {/if} -->
           </li>
         {:else}
           Ajouter un item à la liste
