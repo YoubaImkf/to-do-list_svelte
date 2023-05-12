@@ -7,16 +7,9 @@
 
 </script>
 
-<main>
-
-  <div class="card">
-    <List />
-  </div>
-  
-</main>
-
 <Router routes={{  
-  '/list/:id': Task }} 
+    '/': List,
+    '/list/:id': Task }} 
   />
 
 <style>
