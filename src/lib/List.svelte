@@ -6,7 +6,7 @@ let lists = JSON.parse(localStorage.getItem('lists')) || [];
 let newList = "";
 
 //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
-let modal = false;
+let modal = true;
 
 function addToList(){
     if(newList === ""){
@@ -14,7 +14,7 @@ function addToList(){
     }
     else{
         event.preventDefault();
-        lists = [...lists, {id: lists.length + 1, name: newList, completed : false}];
+        lists = [...lists, {id: lists.length + 1, name: newList}];
         newList = "";
 
         localStorage.setItem('lists', JSON.stringify(lists));
@@ -30,7 +30,9 @@ onMount(() => {
 });
 
 function removeFromList(index){
-    lists = lists.filter((item, i) => i !== index);
+    lists = lists.filter((_, i) => i !== index);
+    localStorage.setItem('lists', JSON.stringify(lists));
+
 }
 
 </script>
@@ -159,7 +161,7 @@ function removeFromList(index){
         width: 95%;
         max-width: 500px;
         min-width: 300px;
-        min-height:150px;
+        height:200px;
         padding: 10px 15px 30px;
         background-color: white;
         position: absolute;
