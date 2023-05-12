@@ -1,8 +1,10 @@
 <script>
   import svelteLogo from './assets/svelte.svg'
   import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import Task from './lib/Task.svelte'
   import List from './lib/List.svelte'
+  import Router from 'svelte-spa-router'
+
 </script>
 
 <main>
@@ -12,6 +14,10 @@
   </div>
   
 </main>
+
+<Router routes={{  
+  '/list/:id': Task }} 
+  />
 
 <style>
   .logo {
@@ -30,3 +36,5 @@
     color: #888;
   }
 </style>
+
+
