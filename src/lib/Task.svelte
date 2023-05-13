@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import FormSubTask from './FormSubTask.svelte';
 
     export let params;
     let lists = JSON.parse(localStorage.getItem('lists')) || [];
@@ -23,11 +24,11 @@
     let newSubTask = "";
 
     //Array pour les sous-tâches
-    let subTasks = [
-    ];
+    let subTasks;
 
     onMount(() => {
         list = lists.find(list => list.id === parseInt(params.id));
+        console.log(list);
     })
 
     //Renommer la liste puis enregistrer en base de données
@@ -57,15 +58,13 @@
                 list.tasks = [...list.tasks];
             }
 
-            const task= {id: tasks.length + 1, name: newTask, completed : false};
+            const task= {id: tasks.length + 1, name: newTask, completed : false, subTasks: []};
 
             list.tasks.push(task);
             
             newTask = "";
 
             localStorage.setItem('lists', JSON.stringify(lists));
-
-            console.log("liste tasks" + list.tasks);
         }
         
     }
@@ -90,14 +89,13 @@
         alert("List duplicated");
     }
 
-    //Les fonctions ci dessous portent sur les sous-tâches
-
     //Fonction pour ajouter une sous-tâche
     function addSubTaskToList(index){
         if(newSubTask === ""){
-            alert("Please enter a subtask");
+            console.log("Please enter a subtask");
         }
         else{
+            console.log(list.tasks[index]);
             event.preventDefault();
             if (!list.tasks[index].subTasks) {
                 list.tasks[index].subTasks = [];
@@ -115,6 +113,8 @@
             localStorage.setItem('lists', JSON.stringify(lists));
 
             console.log("liste subtasks" + list.tasks[index].subTasks);
+
+            return list.tasks[index].subTasks;
         }
         
     }
@@ -131,6 +131,18 @@
         list.tasks[index].subTasks.splice(subIndex, 1);
         localStorage.setItem('lists', JSON.stringify(lists));
     }
+
+    //Fonction pour afficher le formulaire d'ajout d'une sous-tâche
+
+    function showSubTaskForm(index){
+        let input = document.getElementById("subTaskForm"+index);
+
+        console.log("Afficher l'input du formulaire : " + input);
+        console.log("Afficher l'index : " + index);
+
+        input.style.display = "block";
+    }
+
 </script>
 
 <nav class="nav-bar">
@@ -172,13 +184,19 @@
           <li class:checked={item.completed}>
             <input type="checkbox" on:click={() => checkItem(index)} bind:checked={item.completed}/> {item.name}
             <!-- <button on:click={() =>(inputSubTask = !inputSubTask)}>+</button> -->
+            <button on:click={() =>(showSubTaskForm(index))}>+</button>
             <button on:click={() => removeFromList(index)}>x</button>
-            <!-- {#if inputSubTask}
-            <form on:submit={addSubTaskToList}>
+
+            <form id="subTaskForm{index}" style="display:none" on:submit={addSubTaskToList(index)}>
                 <input class="list-input" type="text" bind:value={newSubTask} placeholder="+    Add subtask">
             </form>
 
-            {#if list.tasks[index].subTasks}
+            <!-- {#if inputSubTask}
+            <form  on:submit={addSubTaskToList}>
+                <input class="list-input" type="text" bind:value={newSubTask} placeholder="+    Add subtask">
+            </form>
+            {/if} -->
+            <!-- {#if list.tasks[index].subTasks}
             <ul>
                 {#each list.tasks[index].subTasks as subItem, subIndex}
                     <li class:checked={subItem.completed}>
@@ -187,7 +205,6 @@
                     </li>
                 {/each}
             </ul>
-            {/if}
             {/if} -->
           </li>
         {:else}
