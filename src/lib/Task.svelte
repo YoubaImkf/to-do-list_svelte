@@ -6,8 +6,11 @@
 
     let list;
 
-    //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
-    //let modal = true;
+    //On initialise la variable list à false pour qu'elle ne soit pas affichée au chargement de la page
+    let inputSubTask = false;
+
+    //On initialise la variable inputRenameList à false pour qu'elle ne soit pas affichée au chargement de la page
+    let inputRenameList = false;
 
     //Variable pour le nouvel item de la liste
     let newTask = "";
@@ -16,12 +19,32 @@
     let tasks= [
     ];
 
+    //Variable pour la nouvelle sous-tâche
+    let newSubTask = "";
+
+    //Array pour les sous-tâches
+    let subTasks = [
+    ];
+
     onMount(() => {
         list = lists.find(list => list.id === parseInt(params.id));
     })
 
+    //Renommer la liste puis enregistrer en base de données
+    function renameList(){
+        if(list.name === ""){
+            alert("Please enter a list name");
+        }
+        else{
+            event.preventDefault();
+            list.name = list.name;
+            localStorage.setItem('lists', JSON.stringify(lists));
+            inputRenameList = false;
+        }
+    }
+
     //Fonction pour ajouter un item à la liste si non vide
-    function addToList(){
+    function addTaskToList(){
         if(newTask === ""){
             alert("Please enter a todo item");
         }
@@ -49,7 +72,7 @@
 
     //Fonction pour supprimer un item de la liste
     function removeFromList(index){
-        list.tasks.splice(index, 1);
+        list.tasks = list.tasks.filter((_, i) => i !== index);
         localStorage.setItem('lists', JSON.stringify(lists));
     }
 
@@ -59,30 +82,87 @@
         localStorage.setItem('lists', JSON.stringify(lists));
     }
 
-    console.log("lists"  + lists);
-    console.log("list" + list);
-    console.log("params id " + params.id);
+    //Fonction pour dupliquer une liste avec ses tâches
+
+    function duplicateList(){
+        lists = [...lists, {id: lists.length + 1, name: list.name + " (copie)", tasks: list.tasks}];
+        localStorage.setItem('lists', JSON.stringify(lists));
+        alert("List duplicated");
+    }
+
+    //Les fonctions ci dessous portent sur les sous-tâches
+
+    //Fonction pour ajouter une sous-tâche
+    function addSubTaskToList(index){
+        if(newSubTask === ""){
+            alert("Please enter a subtask");
+        }
+        else{
+            event.preventDefault();
+            if (!list.tasks[index].subTasks) {
+                list.tasks[index].subTasks = [];
+            }
+            else{
+                list.tasks[index].subTasks = [...list.tasks[index].subTasks];
+            }
+
+            const subTask= {id: subTasks.length + 1, name: newSubTask, completed : false};
+
+            list.tasks[index].subTasks.push(subTask);
+            
+            newSubTask = "";
+
+            localStorage.setItem('lists', JSON.stringify(lists));
+
+            console.log("liste subtasks" + list.tasks[index].subTasks);
+        }
+        
+    }
+    
+
+    //Fonction pour cocher une sous-tâche
+    function checkSubItem(index, subIndex){
+        list.tasks[index].subTasks[subIndex].completed = !list.tasks[index].subTasks[subIndex].completed;
+        localStorage.setItem('lists', JSON.stringify(lists));
+    }
+
+    //Fonction pour supprimer une sous-tâche
+    function removeFromSubList(index, subIndex){
+        list.tasks[index].subTasks.splice(subIndex, 1);
+        localStorage.setItem('lists', JSON.stringify(lists));
+    }
 </script>
 
+<nav class="nav-bar">
+    <a class="title" href="/">Back to lists</a>
+    <div class="line"></div>
+</nav>
 
-<div>
-    
-</div>
-<!--Si modal est true alors on affiche la modal-->
-<div class="modal-container">
-    <!--Au clique sur l'overlay la modal devient false et se ferme-->
-    <div class="modal">
-        <!-- Bouton pour fermer la modal -->
+<div class="list-container">
+    <!--Au clique sur l'overlay la list devient false et se ferme-->
+    <div class="list">
+        <!-- Bouton pour fermer la list -->
         {#if list}
-        <h1>{list.name}</h1>
+            {#if inputRenameList === false}
+            <div class="list-name">
+                <h1>{list.name}</h1>
+                <!-- Renommer la liste -->
+                <button class="button-list" on:click={() =>(inputRenameList = !inputRenameList)}>Rename list</button>
+            </div>
+            {:else}
+            <form on:submit={renameList}>
+                <input class="list-input" type="text" bind:value={list.name} placeholder="Rename list">
+            </form>
+            {/if}
         {/if}
-        <div class="line"></div>
+
+        <div class="line float"></div>
         <!-- Input pour ajouter un item à la liste -->
-        <form on:submit={addToList}>
-            <input class="modal-input" type="text" bind:value={newTask} placeholder="+    Add task">
+        <form on:submit={addTaskToList}>
+            <input class="list-input" type="text" bind:value={newTask} placeholder="+    Add task">
         </form>
-        <!-- <input class="modal-input" type="text" bind:value={newTask} placeholder="new todo item"> -->
-        <!-- <button class="modal-input-button" on:click={addToList} >Add task</button> -->
+        <!-- <input class="list-input" type="text" bind:value={newTask} placeholder="new todo item"> -->
+        <!-- <button class="list-input-button" on:click={addTaskToList} >Add task</button> -->
     
         <!--for each pour ajouter chaque item à la liste-->
         {#if list && list.tasks}
@@ -91,86 +171,96 @@
         {#each list.tasks as item, index}
           <li class:checked={item.completed}>
             <input type="checkbox" on:click={() => checkItem(index)} bind:checked={item.completed}/> {item.name}
-            <!-- <button on:click={() =>(subTask = !subTask)}>+</button> -->
+            <!-- <button on:click={() =>(inputSubTask = !inputSubTask)}>+</button> -->
             <button on:click={() => removeFromList(index)}>x</button>
+            <!-- {#if inputSubTask}
+            <form on:submit={addSubTaskToList}>
+                <input class="list-input" type="text" bind:value={newSubTask} placeholder="+    Add subtask">
+            </form>
+
+            {#if list.tasks[index].subTasks}
+            <ul>
+                {#each list.tasks[index].subTasks as subItem, subIndex}
+                    <li class:checked={subItem.completed}>
+                        <input type="checkbox" on:click={() => checkSubItem(index, subIndex)} bind:checked={subItem.completed}/> {subItem.name}
+                        <button on:click={() => removeFromSubList(index, subIndex)}>x</button>
+                    </li>
+                {/each}
+            </ul>
+            {/if}
+            {/if} -->
           </li>
         {:else}
           Ajouter un item à la liste
         {/each}
         </ul>
         {/if}
+        <!-- Bouton qui permet de dupliquer la liste -->
+        <button class="button-list" on:click={duplicateList}>Duplicate list</button>
     </div>
 </div>
 
 <style>
-    .modal-btn{
-        background-color: #3d7fe2;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        min-width: 150px;
-        padding: 10px 14px;
-        margin: 50px 20px;
-        cursor: pointer;
-    }
 
-    .modal-btn:hover{
-        background-color: #1567e2;
-    }
-
-    .modal-container{
+    /* .list-container{
         position: fixed;
         top: 0;
         width: 100vw;
         height:100vh;
+    } */
+
+
+    .nav-bar{
+        margin: 30px 0 0 50px;
+        width:200px;
     }
 
-    .overlay{
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
+    .title{
+        text-decoration: none;
+        font-size: 23px;
+        margin: 0 0 5px 15px;
+        color:rgb(81, 80, 80);
+        font-weight: bold;
     }
 
-    .modal{
+    .list{
         width: 100%;
         max-width: 500px;
         min-width: 300px;
-        height:400px;
+        height:auto;
         max-height:400px;
         padding: 10px 15px 30px;
         background-color: white;
         position: absolute;
-        top: 53%;
+        top: 45%;
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 5px;
         overflow: auto;
     }
 
-    .modal h1{
-        margin-bottom: 0px;
-        font-size:20px
+    .list-name{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
     }
 
-    .close-modal{
-        padding: 0px 10px 1px 10px;
-        border: none;
+    .list h1{
+        font-size:20px;
+    }
+
+    .button-list{
+        border: 1px solid #ccc;
         border-radius: 5px;
-        font-size: 20px;
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        background-color: #ff365e;
-        color:white;
+        color:grey;
+        width:20%;
+        margin-top:3px;
+        padding: 5px 3px;
         cursor: pointer;
     }
 
-    .close-modal:hover{
-        background-color: #ff1e4a;
-    }
-
-    .modal-input{
+    .list-input{
         width: 100%;
         padding: 10px 10px;
         border: none;
@@ -180,35 +270,16 @@
 
     }
     
-    .modal-input-button{
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        color:grey;
-        width:19%;
-        min-width: 80px;
-        padding: 5px 5px;
-        cursor: pointer;
-    }
 
-    .modal-input-subtask{
+    .list-input-subtask{
         margin-left: 20px;
         width: 70%;
         padding: 5px 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
-    
-    .modal-input-button-subtask{
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        color:grey;
-        width:19%;
-        min-width: 80px;
-        padding: 5px 3px;
-        cursor: pointer;
-    }
 
-    .modal-input-button-close-subtask{
+    .list-input-button-close-subtask{
         border: 1px solid #ccc;
         border-radius: 5px;
         color:grey;
@@ -218,30 +289,12 @@
     }
 
 
-    .modal ul{
+    .list ul{
         margin: 10px 0 20px;
     }
 
-    .modal ul li{
+    .list ul li{
         margin-top: 3px;
-    }
-
-    .modal-btn-create-list{
-        background-color: #3d7fe2;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        display: block;
-        position: absolute;
-        bottom: 10px;
-        right: 15px;
-        min-width: 80px;
-        padding: 5px 14px;
-        cursor: pointer;
-    }
-
-    .modal-btn-create-list:hover{
-        background-color: #1567e2;
     }
 
     .checked{

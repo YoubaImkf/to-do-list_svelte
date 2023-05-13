@@ -1,12 +1,13 @@
 <script>
 import {onMount} from 'svelte';
+import { push } from 'svelte-spa-router';
 
 let lists = JSON.parse(localStorage.getItem('lists')) || [];
 
 let newList = "";
 
 //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
-let modal = true;
+let modal = false;
 
 function addToList(){
     if(newList === ""){
@@ -76,20 +77,12 @@ function removeFromList(index){
 <style>
     .lists{
         margin: 30px 0 0 50px;
-        width:200px;
     }
 
     .title-list{
         font-size: 23px;
         margin: 0 0 5px 15px;
         color:rgb(81, 80, 80);
-    }
-
-    .line{
-        width: 100%;
-        height: 1px;
-        background-color: rgb(160, 160, 160);
-        margin-bottom: 20px;
     }
 
     .lists ul{
