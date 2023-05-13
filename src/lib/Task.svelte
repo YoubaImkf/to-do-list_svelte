@@ -94,6 +94,9 @@
         ];
         localStorage.setItem("lists", JSON.stringify(lists));
         alert("List duplicated");
+        setTimeout(() => {
+            window.location.reload();
+        }, 10);
     }
 
     //Les fonctions ci dessous portent sur les sous-tâches
