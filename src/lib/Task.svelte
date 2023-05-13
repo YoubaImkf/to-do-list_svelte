@@ -145,8 +145,6 @@
 
 <List/>
 
-<div class="list-container">
-
     <!--Au clique sur l'overlay la list devient false et se ferme-->
     <div class="list">
         <!-- Bouton pour fermer la list -->
@@ -232,7 +230,7 @@
             >Duplicate list</button
         >
     </div>
-</div>
+
 
 <style>
     .list-input::placeholder {
@@ -244,7 +242,7 @@
         width: 65%;
         height: 1px;
         background-color: #dddddd;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
     }
 
     .underline {
@@ -269,7 +267,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 28px;
+        margin-bottom: 15px;
     }
 /* 
     .button-list{
@@ -301,12 +299,12 @@
     .list-input {
         max-width: 90%;
         width: 65%;
-        height: 62px;
+        height: 50px;
         padding: 10px 10px;
         border: none;
         background-color: rgb(243, 240, 240);
         border-radius: 15px;
-        margin-bottom: 80px;
+        margin-bottom: 40px;
         background-image: url("../assets/+.svg");
         background-position: 15px 20px;
         background-repeat: no-repeat;
@@ -368,7 +366,7 @@
     }
 
     .task-item::after {
-        margin-bottom: -55px;
+        margin-bottom: -30px;
         content: "";
         position: absolute;
         left: 0;
@@ -397,7 +395,7 @@
     }
 
     .list ul li {
-        margin-bottom: 80px;
+        margin-bottom: 60px;
         font-size: 14px;
         font-weight: 500;
     }
