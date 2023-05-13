@@ -1,107 +1,132 @@
 <script>
-import {onMount} from 'svelte';
-import { push } from 'svelte-spa-router';
+    import { onMount } from "svelte";
+    import { push } from "svelte-spa-router";
 
-let lists = JSON.parse(localStorage.getItem('lists')) || [];
+    let lists = JSON.parse(localStorage.getItem("lists")) || [];
 
-let newList = "";
+    let newList = "";
 
-//On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
-let modal = false;
+    //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
+    let modal = false;
 
-function addToList(){
-    if(newList === ""){
-        alert("Please enter a todo item");
+    function addToList() {
+        if (newList === "") {
+            alert("Please enter a todo item");
+        } else {
+            event.preventDefault();
+            lists = [...lists, { id: lists.length + 1, name: newList }];
+            newList = "";
+
+            localStorage.setItem("lists", JSON.stringify(lists));
+            modal = false;
+        }
     }
-    else{
-        event.preventDefault();
-        lists = [...lists, {id: lists.length + 1, name: newList}];
-        newList = "";
 
-        localStorage.setItem('lists', JSON.stringify(lists));
-        modal = false;
+    onMount(() => {
+        const savedLists = localStorage.getItem("lists");
+        if (savedLists) {
+            lists = JSON.parse(savedLists);
+        }
+    });
+
+    function removeFromList(index) {
+        lists = lists.filter((_, i) => i !== index);
+        localStorage.setItem("lists", JSON.stringify(lists));
     }
-}
 
-onMount(() => {
-    const savedLists = localStorage.getItem('lists');
-    if(savedLists){
-        lists = JSON.parse(savedLists);
+    function handleClick(listId) {
+        // Update the URL and reload the page
+        push(`/list/${listId}`);
+        setTimeout(() => {
+            window.location.reload();
+        }, 10);
     }
-});
-
-function removeFromList(index){
-    lists = lists.filter((_, i) => i !== index);
-    localStorage.setItem('lists', JSON.stringify(lists));
-
-}
-
 </script>
 
 <!-- Listes déjà existantes -->
 <div class="lists">
-    <h1 class="title-list">Lists</h1>
-    <div class="line"></div>
+    <h1 class="title-list">Lists 🚀</h1>
+    <div class="line" />
     <ul>
         {#each lists as list, i}
             <li>
-                <a href="/#/list/{list.id}">{list.name}</a>
+                <a href="/#/list/{list.id}" on:click={() => handleClick(list.id)}>{list.name}</a>
                 <button on:click={() => removeFromList(i)}>x</button>
             </li>
         {/each}
-    </ul>
 
-     <!--Au clique sur le bouton la modal devient true-->
-    <button class="button-add-list" on:click={() =>(modal = !modal)} >+ New List</button>
+        <li>
+            <!--Au clique sur le bouton la modal devient true-->
+            <button class="button-add-list" on:click={() => (modal = !modal)}
+                >+ New List</button
+            >
+        </li>
+    </ul>
 </div>
 
 <!--Si modal est true alors on affiche la modal-->
 {#if modal}
-
-<div class="modal-container">
-
-<!--Au clique sur l'overlay la modal devient false et se ferme-->
-<div class="overlay" on:click={() =>(modal = !modal)}></div>
-<div class="modal">
-    <!-- Bouton pour fermer la modal -->
-    <button class="close-modal" on:click={() =>(modal = !modal)}>x</button>
-    <h1>Add a list</h1>
-    <label for="name">Name</label>
-    <input  class="modal-input" type="text" bind:value={newList}>
-    <button class="modal-btn-create-list" on:click={addToList} >Add</button>
-
-</div>
-</div>
+    <div class="modal-container">
+        <!--Au clique sur l'overlay la modal devient false et se ferme-->
+        <div class="overlay" on:click={() => (modal = !modal)} />
+        <div class="modal">
+            <!-- Bouton pour fermer la modal -->
+            <button class="close-modal" on:click={() => (modal = !modal)}>
+                <img src="src\assets\close.svg" alt="" />
+            </button>
+            <h1>Add a list</h1>
+            <div class="under-line" />
+            <label for="name">Name</label>
+            <input class="modal-input" type="text" bind:value={newList} />
+            <button class="modal-btn-create-list" on:click={addToList}
+                >Add</button
+            >
+        </div>
+    </div>
 {/if}
 
+
 <style>
-    .lists{
-        margin: 30px 0 0 50px;
+    .line {
+        width: 200px;
+        height: 1px;
+        background-color: rgb(225, 224, 224);
+        margin-bottom: 20px;
     }
 
-    .title-list{
-        font-size: 23px;
+    .lists {
+        background-color: #fafafa;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        left: 0;
+        max-width: 310px;
+        min-height: 370px;
+        position: fixed;
+        width: 100%;
+        padding-top: 54px;
+        padding-left: 20px;
+    }
+
+    .title-list {
+        font-size: 16px;
         margin: 0 0 5px 15px;
-        color:rgb(81, 80, 80);
+        color: rgb(81, 80, 80);
+        font-weight: bold;
     }
 
-    .lists ul{
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .lists ul li{
+    .lists ul li {
         margin: 0 0 5px 15px;
     }
 
-    .lists ul li a{
+    .lists ul li a {
         text-decoration: none;
-        color:rgb(81, 80, 80);
-        font-size: 18px;
+        color: rgb(81, 80, 80);
+        font-size: 14px;
+        font-weight: 500;
     }
 
-    .lists ul li button{
+    .lists ul li button {
         background-color: transparent;
         border: none;
         color: rgb(81, 80, 80);
@@ -109,19 +134,23 @@ function removeFromList(index){
         cursor: pointer;
     }
 
-    .button-add-list{
-        color: #3d7fe2;
+    .lists ul li .button-add-list {
+        margin-top: 20px;
+        color: #219af2;
         border: none;
         cursor: pointer;
-        font-size: 18px;
-        margin: 10px 0 5px 15px;
+        font-size: 16px;
+        font-weight: 700;
+        background: none;
+        cursor: pointer;
+        text-decoration: none;
     }
 
-    .button-add-list:hover{
-        text-decoration:underline;
+    .button-add-list:hover {
+        text-decoration: underline;
     }
 
-    .modal-btn{
+    .modal-btn {
         background-color: #3d7fe2;
         color: white;
         border: none;
@@ -132,118 +161,129 @@ function removeFromList(index){
         cursor: pointer;
     }
 
-    .modal-btn:hover{
+    .modal-btn:hover {
         background-color: #1567e2;
     }
 
-    .modal-container{
+    .modal-container {
         position: fixed;
         top: 0;
         width: 100vw;
-        height:100vh;
+        height: 100vh;
     }
 
-    .overlay{
+    .overlay {
         position: absolute;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.25);
     }
 
-    .modal{
+    .modal {
         width: 95%;
-        max-width: 500px;
+        max-width: 473.25px;
         min-width: 300px;
-        height:200px;
-        padding: 10px 15px 30px;
+        height: 207px;
         background-color: white;
         position: absolute;
         top: 45%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 5px;
+        border-radius: 10px;
         overflow: auto;
+        box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.25);
+        padding: 10px 15px 30px;
     }
 
-    .modal h1{
-        margin-bottom: 20px;
-        font-size:20px
+    .modal h1 {
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: bold;
     }
 
-    .close-modal{
-        padding: 0px 10px 1px 10px;
-        border: none;
-        border-radius: 5px;
-        font-size: 20px;
+    .modal label {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .under-line {
+        width: 100%;
+        height: 1px;
+        background-color: rgba(221, 221, 221, 0.7);
+        margin-bottom: 10px;
+    }
+
+    .close-modal {
         position: absolute;
         top: 10px;
         right: 15px;
-        background-color: #ff365e;
-        color:white;
+        border: none;
+        background-color: white;
         cursor: pointer;
     }
 
-    .close-modal:hover{
-        background-color: #ff1e4a;
-    }
-
-    .modal-input{
+    .modal-input {
         width: 100%;
         padding: 5px 10px;
-        border: 1px solid #ccc;
+        border: 1px solid #dddddd;
         border-radius: 5px;
-        margin-top:10px;
+        margin-top: 10px;
         margin-bottom: 40px;
     }
-    
-    .modal-input-button{
+
+    .modal-input:focus {
+        outline: none !important;
+        border-color: #719ece;
+        /* border: 0 0 10px #DDDDDD; */
+    }
+
+    .modal-input-button {
         border: 1px solid #ccc;
         border-radius: 5px;
-        color:grey;
-        width:19%;
+        color: grey;
+        width: 19%;
         min-width: 80px;
         padding: 5px 5px;
         cursor: pointer;
     }
 
-    .modal-input-subtask{
+    .modal-input-subtask {
         margin-left: 20px;
         width: 70%;
         padding: 5px 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
-    
-    .modal-input-button-subtask{
+
+    .modal-input-button-subtask {
         border: 1px solid #ccc;
         border-radius: 5px;
-        color:grey;
-        width:19%;
+        color: grey;
+        width: 19%;
         min-width: 80px;
         padding: 5px 3px;
         cursor: pointer;
     }
 
-    .modal-input-button-close-subtask{
+    .modal-input-button-close-subtask {
         border: 1px solid #ccc;
         border-radius: 5px;
-        color:grey;
-        width:3%;
+        color: grey;
+        width: 3%;
         padding: 5px 3px;
         cursor: pointer;
     }
 
-
-    .modal ul{
+    .modal ul {
         margin: 10px 0 20px;
     }
 
-    .modal ul li{
+    .modal ul li {
         margin-top: 3px;
     }
 
-    .modal-btn-create-list{
-        background-color: #3d7fe2;
+    .modal-btn-create-list {
+        background-color: #219af2;
         color: white;
         border: none;
         border-radius: 5px;
@@ -256,24 +296,24 @@ function removeFromList(index){
         cursor: pointer;
     }
 
-    .modal-btn-create-list:hover{
+    .modal-btn-create-list:hover {
         background-color: #1567e2;
     }
 
-    .checked{
+    .checked {
         text-decoration: line-through;
     }
 
-    ul{
-        margin:0;
+    ul {
+        margin: 0;
         padding: 0;
     }
 
-    li{
+    li {
         list-style: none;
     }
 
-    .liste-subtask{
+    .liste-subtask {
         margin-left: 30px;
     }
 </style>
