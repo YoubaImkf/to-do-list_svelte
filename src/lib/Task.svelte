@@ -7,7 +7,7 @@
 
     let list;
 
-    //On initialise la variable list à false pour qu'elle ne soit pas affichée au chargement de la page
+    //On initialise la variable inputSubTask à false pour qu'elle ne soit pas affichée au chargement de la page
     let inputSubTask = false;
 
     //On initialise la variable inputRenameList à false pour qu'elle ne soit pas affichée au chargement de la page
@@ -29,7 +29,7 @@
         list = lists.find((list) => list.id === parseInt(params.id));
     });
 
-    //Renommer la liste puis enregistrer en base de données
+    //Renommer la liste puis enregistrer dans le local storage
     function renameList() {
         if (list.name === "") {
             alert("Please enter a list name");
@@ -181,9 +181,6 @@
                 placeholder="        Add task"
             />
         </form>
-        <!-- <input class="list-input" type="text" bind:value={newTask} placeholder="new todo item"> -->
-        <!-- <button class="list-input-button" on:click={addTaskToList} >Add task</button> -->
-
         <!--for each pour ajouter chaque item à la liste-->
         {#if list && list.tasks}
             <ul class="task-list">
@@ -197,6 +194,7 @@
                             bind:checked={item.completed}
                         />
                         {item.name}
+                        <!-- Bouton pour ajouter une sous tâche -->
                         <!-- <button on:click={() =>(inputSubTask = !inputSubTask)}>+</button> -->
                         <button
                             class="remove-task"
@@ -204,7 +202,8 @@
                         >
                             <img src="src\assets\close.svg" alt="" />
                         </button>
-                        <!-- {#if inputSubTask}
+            <!-- Ajout d'une sous tâche -->
+            <!-- {#if inputSubTask}
             <form on:submit={addSubTaskToList}>
                 <input class="list-input" type="text" bind:value={newSubTask} placeholder="+    Add subtask">
             </form>
@@ -307,7 +306,7 @@
     .list-input:focus{
         outline: none !important;
         border: 1px solid #c6c6c6;
-        background-image: none; /* Remove the background image */
+        background-image: none; /* Enleve l'image du background */
         font-size: 20px;
     }
 
@@ -331,7 +330,7 @@
     }
 
     .checkbox-round:checked::before {
-        content: "\2713"; /* Unicode character for a checkmark symbol */
+        content: "\2713"; /* Unicode caractère */
         display: inline-block;
         width: 100%;
         text-align: center;

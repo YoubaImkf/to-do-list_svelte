@@ -18,7 +18,7 @@
         }
     }
     
-    // detect screen size changes
+    // detecte si la fenetre est redimensionnée
     window.addEventListener('resize', handleResize);
 
 
@@ -45,10 +45,11 @@
     function removeFromList(index) {
         lists = lists.filter((_, i) => i !== index);
         localStorage.setItem("lists", JSON.stringify(lists));
+        push(`/`);
     }
 
     function handleClick(listId) {
-        // Update the URL and reload the page
+        // Change l'url pour afficher la liste
         push(`/list/${listId}`);
         setTimeout(() => {
             window.location.reload();
