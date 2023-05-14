@@ -82,22 +82,23 @@
     }
 
     //Fonction pour dupliquer une liste avec ses tâches
-
     function duplicateList() {
-        lists = [
-            ...lists,
-            {
-                id: lists.length + 1,
-                name: list.name + " (copie)",
-                tasks: list.tasks,
-            },
-        ];
+        const duplicatedList = { ...list };
+        const copiedLists = lists.filter((l) => l.name.startsWith(`${list.name} (copie`));
+        const copyNumber = copiedLists.length + 1;
+        
+        duplicatedList.name = `${list.name} (copie ${copyNumber})`;
+        duplicatedList.id = lists.length + 1;
+        
+        lists = [...lists, duplicatedList];
         localStorage.setItem("lists", JSON.stringify(lists));
+        
         alert("List duplicated");
         setTimeout(() => {
             window.location.reload();
         }, 10);
     }
+
 
     //Les fonctions ci dessous portent sur les sous-tâches
 
@@ -226,36 +227,19 @@
             </ul>
         {/if}
         <!-- Bouton qui permet de dupliquer la liste -->
-        <button class="button-list" on:click={duplicateList}
+        <button class="duplicate-button" on:click={duplicateList}
             >Duplicate list</button
         >
     </div>
 
 
 <style>
-    .list-input::placeholder {
-        color: #c6c6c6;
-        font-size: 20px;
-    }
 
     .line {
         width: 65%;
         height: 1px;
         background-color: #dddddd;
         margin-bottom: 30px;
-    }
-
-    .underline {
-        width: 200px;
-        height: 1px;
-        background-color: rgb(225, 224, 224);
-    }
-
-    .title {
-        text-decoration: none;
-        font-size: 16px;
-        color: rgb(81, 80, 80);
-        font-weight: bold;
     }
 
     .list {
@@ -269,10 +253,12 @@
         align-items: center;
         margin-bottom: 15px;
     }
-/* 
-    .button-list{
-        margin-top: 50px;
-    } */
+
+    .list-input::placeholder {
+        color: #c6c6c6;
+        font-size: 20px;
+        font-weight: 700;
+    }
 
     .list h1 button{
         margin-top: 50px;
@@ -306,7 +292,7 @@
         border-radius: 15px;
         margin-bottom: 40px;
         background-image: url("../assets/+.svg");
-        background-position: 15px 20px;
+        background-position: 15px 15px;
         background-repeat: no-repeat;
     }
 
@@ -324,7 +310,6 @@
         background-image: none; /* Remove the background image */
         font-size: 20px;
     }
-
 
     .checkbox-round {
         width: 1.3em;
@@ -374,6 +359,7 @@
         width: 65%;
         height: 1px;
         background-color: #dddddd;
+
     }
 
     .remove-task {
@@ -403,4 +389,30 @@
     .checked {
         text-decoration: line-through;
     }
+
+    .duplicate-button{
+        margin-top: 35px;
+        border-radius: 5px;
+        border: 1px solid #dfdfdf;
+        background-color: #f3f0f0;
+        width: 100px;
+        height:30px;
+        cursor: pointer;
+    }
+
+    .duplicate-button:hover{
+        background-color: #dfdfdf;
+        transition: .5s all; 
+    }
+
+    @media (max-width: 1250px) {
+    .list {
+        margin: 0 0 0 30px;   
+        width: 100%; 
+
+    }
+    .list ul li {
+        width: 100%;
+    }
+}
 </style>
