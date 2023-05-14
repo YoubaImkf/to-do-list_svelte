@@ -8,6 +8,19 @@
 
     //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
     let modal = false;
+    let showLists = false;
+
+    function handleResize() {
+        if (window.innerWidth > 1250) {
+            showLists = true;
+        } else {
+            showLists = false;
+        }
+    }
+    
+    // detect screen size changes
+    window.addEventListener('resize', handleResize);
+
 
     function addToList() {
         if (newList === "") {
@@ -43,7 +56,11 @@
     }
 </script>
 
-<!-- Listes déjà existantes -->
+<button class="show-lists-icon" on:click={() => (showLists = !showLists)}>
+    <img src="src\assets\list.svg" alt="List icon">
+</button>
+  
+{#if showLists}
 <div class="lists">
     <h1 class="title-list">Lists 🚀</h1>
     <div class="line" />
@@ -51,7 +68,9 @@
         {#each lists as list, i}
             <li>
                 <a href="/#/list/{list.id}" on:click={() => handleClick(list.id)}>{list.name}</a>
-                <button on:click={() => removeFromList(i)}>x</button>
+                    <button on:click={() => removeFromList(i)}>
+                        <img src="src\assets\close.svg" alt="">
+                    </button>
             </li>
         {/each}
 
@@ -63,7 +82,7 @@
         </li>
     </ul>
 </div>
-
+{/if}
 <!--Si modal est true alors on affiche la modal-->
 {#if modal}
     <div class="modal-container">
@@ -106,6 +125,7 @@
         width: 100%;
         padding-top: 54px;
         padding-left: 20px;
+        z-index: 999;
     }
 
     .title-list {
@@ -116,14 +136,22 @@
     }
 
     .lists ul li {
-        margin: 0 0 5px 15px;
+        margin: 0 0 10px 15px;
+        position: relative;
+        display: flex;
+        align-items: center;
     }
 
+    /* Troncate */
     .lists ul li a {
         text-decoration: none;
         color: rgb(81, 80, 80);
         font-size: 14px;
         font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 210px;
     }
 
     .lists ul li button {
@@ -132,6 +160,13 @@
         color: rgb(81, 80, 80);
         font-size: 18px;
         cursor: pointer;
+    }
+
+    .lists ul li button img{
+        width: 9px;
+        height: 9px;
+        position: absolute;
+        left: 80%;
     }
 
     .lists ul li .button-add-list {
@@ -170,6 +205,7 @@
         top: 0;
         width: 100vw;
         height: 100vh;
+        z-index:999;
     }
 
     .overlay {
@@ -193,6 +229,7 @@
         overflow: auto;
         box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.25);
         padding: 10px 15px 30px;
+        z-index: 9999;
     }
 
     .modal h1 {
@@ -304,16 +341,31 @@
         text-decoration: line-through;
     }
 
-    ul {
-        margin: 0;
-        padding: 0;
-    }
-
-    li {
-        list-style: none;
-    }
-
     .liste-subtask {
         margin-left: 30px;
     }
+    .show-lists-icon {
+        display: none;
+    }
+
+    .show-lists-icon img {
+        width: 30px; 
+        height: auto; 
+    }
+
+
+    @media (max-width: 1249px) {
+        .show-lists-icon {
+            display: block;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 999;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+
+        }
+    }
+
 </style>
