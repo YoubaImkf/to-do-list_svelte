@@ -4,9 +4,6 @@ This project glues [Svelte](https://svelte.dev/) and
 [Vite](https://vitejs.dev/) together.
 
 ## 🎉 Getting started 
-
-https://github.com/YoubaImkf/to-do-list_svelte/assets/90412041/bf1024ce-3e33-49c7-8eab-bd60e6d2f721
-
 ![figma_model.gif](./docs/media/GIF_Maquette.gif)
 
 ### The prerequisites
