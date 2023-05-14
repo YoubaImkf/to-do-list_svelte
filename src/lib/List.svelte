@@ -8,7 +8,7 @@
 
     //On initialise la variable modal à false pour qu'elle ne soit pas affichée au chargement de la page
     let modal = false;
-    let showLists = false;
+    let showLists = true;
 
     function handleResize() {
         if (window.innerWidth > 1250) {
